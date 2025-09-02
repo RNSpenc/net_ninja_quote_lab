@@ -4,7 +4,15 @@ import 'quote.dart';
 class QuoteCard extends StatelessWidget {
 
   final Quote quote;
-  QuoteCard({required this.quote});
+  final VoidCallback onLike;
+  final VoidCallback onDelete;
+
+  QuoteCard({
+    super.key,
+    required this.quote,
+    required this.onLike,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +38,41 @@ class QuoteCard extends StatelessWidget {
                   color: Colors.grey[800],
                 ),
               ),
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.thumb_up),
+                    onPressed: onLike,
+                  ),
+                  Text('${quote.likes}'),
+                  IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () async{
+                        final ok = await showDialog<bool>(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: Text('Delete Quote?'),
+                            content: Text('Are you sure you want to delete this quote?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: Text('Delete'),
+                              ),
+                            ],
+                          ),
+                        ) ?? false;
+                        if (ok) {
+                          onDelete();
+                        }
+                      }
+                  ),
+                ],
+              ),
+
             ],
           ),
         )
